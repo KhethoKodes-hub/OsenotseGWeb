@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OGT · Services — Construction, Civil, Hygiene & More</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Rajdhani:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --gold: #c8a84b;
+            --gold-light: #f0d88a;
+            --gold-dark: #8a6d2f;
+            --obsidian: #0a0906;
+            --charcoal: #1a1813;
+            --off-white: #f8f5ef;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--obsidian);
+            font-family: 'Rajdhani', sans-serif;
+            color: var(--off-white);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        .cursor {
+            width: 12px; height: 12px;
+            background: var(--gold); border-radius: 50%;
+            position: fixed; top: 0; left: 0;
+            pointer-events: none; z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s;
+            mix-blend-mode: difference;
+        }
+        .cursor-ring {
+            width: 38px; height: 38px;
+            border: 1.5px solid rgba(200,168,75,0.55);
+            border-radius: 50%;
+            position: fixed; top: 0; left: 0;
+            pointer-events: none; z-index: 99998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.18s ease;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--obsidian); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            backdrop-filter: blur(20px) saturate(1.5);
+            -webkit-backdrop-filter: blur(20px) saturate(1.5);
+            background: rgba(10,9,6,0.88);
+            border-bottom: 1px solid rgba(200,168,75,0.12);
+            transition: padding 0.4s;
+        }
+
+        .gold-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+            position: relative; overflow: hidden;
+        }
+        .gold-line::after {
+            content: '';
+            position: absolute; top: 0; left: -100%;
+            width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+            animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer { 100% { left: 200%; } }
+
+        .hero {
+            position: relative;
+            height: 72vh; min-height: 520px;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(to bottom, rgba(10,9,6,0.55) 0%, rgba(10,9,6,0.35) 35%, rgba(10,9,6,0.95) 100%),
+                url('./assets/hero3.png');
+            background-size: cover; background-position: center 30%;
+            transform: scale(1.06);
+            animation: heroZoom 20s ease-in-out infinite alternate;
+        }
+        @keyframes heroZoom {
+            0%   { transform: scale(1.06); }
+            100% { transform: scale(1.12) translateY(-1%); }
+        }
+        .hero-grain {
+            position: absolute; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            opacity: 0.25; pointer-events: none;
+        }
+        .hero-line-l { position: absolute; left: 8%; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent, rgba(200,168,75,0.22), transparent); pointer-events: none; }
+        .hero-line-r { position: absolute; right: 8%; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent, rgba(200,168,75,0.14), transparent); pointer-events: none; }
+
+        .glass-card {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(24px) saturate(1.4);
+            -webkit-backdrop-filter: blur(24px) saturate(1.4);
+            border: 1px solid rgba(200,168,75,0.15);
+            border-radius: 16px;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative; overflow: hidden;
+        }
+        .glass-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(200,168,75,0.45), transparent);
+        }
+        .glass-card:hover {
+            background: rgba(255,255,255,0.07);
+            border-color: rgba(200,168,75,0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px -20px rgba(200,168,75,0.2);
+        }
+        .card-glow {
+            position: absolute; top: -40%; left: -40%;
+            width: 180%; height: 180%;
+            background: radial-gradient(circle at center, rgba(200,168,75,0.06) 0%, transparent 65%);
+            opacity: 0; transition: opacity 0.4s; pointer-events: none;
+        }
+        .glass-card:hover .card-glow { opacity: 1; }
+
+        .svc-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(200,168,75,0.1);
+            border-radius: 18px;
+            padding: 1.8rem;
+            position: relative; overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: none;
+        }
+        .svc-card::before {
+            content: ''; position: absolute;
+            bottom: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            transform: scaleX(0); transform-origin: center;
+            transition: transform 0.4s;
+        }
+        .svc-card::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(200,168,75,0.05) 0%, transparent 60%);
+            opacity: 0; transition: opacity 0.4s;
+        }
+        .svc-card:hover {
+            border-color: rgba(200,168,75,0.45);
+            transform: translateY(-7px) scale(1.01);
+            box-shadow: 0 40px 60px -20px rgba(200,168,75,0.2);
+            background: rgba(255,255,255,0.055);
+        }
+        .svc-card:hover::before { transform: scaleX(1); }
+        .svc-card:hover::after  { opacity: 1; }
+        .svc-card:hover .svc-icon { transform: rotate(-8deg) scale(1.12); background: linear-gradient(135deg,rgba(200,168,75,0.28),rgba(200,168,75,0.08)); border-color: rgba(200,168,75,0.55); }
+        .svc-card:hover .svc-num { opacity: 1; transform: translateY(0); }
+
+        .svc-icon {
+            width: 50px; height: 50px; border-radius: 12px;
+            background: linear-gradient(135deg, rgba(200,168,75,0.12), rgba(200,168,75,0.04));
+            border: 1px solid rgba(200,168,75,0.22);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; margin-bottom: 1.1rem;
+            transition: all 0.35s;
+        }
+        .svc-num {
+            position: absolute; bottom: 1rem; right: 1.2rem;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 4.5rem; line-height: 1;
+            color: rgba(200,168,75,0.06);
+            opacity: 0; transform: translateY(8px);
+            transition: all 0.4s; pointer-events: none;
+            user-select: none;
+        }
+
+        .cat-tab {
+            display: flex; align-items: center; gap: 0.7rem;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid rgba(200,168,75,0.15);
+            border-radius: 100px;
+            font-size: 0.78rem; font-weight: 600;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: rgba(200,168,75,0.5);
+            background: rgba(200,168,75,0.04);
+            transition: all 0.3s; cursor: none;
+        }
+        .cat-tab:hover, .cat-tab.active {
+            border-color: rgba(200,168,75,0.5);
+            background: rgba(200,168,75,0.1);
+            color: var(--gold);
+            transform: translateY(-2px);
+        }
+
+        .section-label {
+            font-size: 0.7rem; font-weight: 600;
+            letter-spacing: 0.25em; text-transform: uppercase;
+            color: var(--gold);
+            display: flex; align-items: center; gap: 0.75rem;
+        }
+        .section-label::before { content: ''; width: 30px; height: 1px; background: var(--gold); }
+
+        .section-head {
+            display: flex; align-items: center; gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .section-head-line {
+            flex: 1; height: 1px;
+            background: linear-gradient(90deg, rgba(200,168,75,0.3), transparent);
+        }
+
+        .reveal {
+            opacity: 0; transform: translateY(28px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            padding: 0.45rem 1rem; border-radius: 100px;
+            border: 1px solid rgba(200,168,75,0.3);
+            background: rgba(200,168,75,0.08);
+            backdrop-filter: blur(12px);
+            font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+        }
+        .hero-badge-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--gold); animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(200,168,75,0.5); }
+            50%      { box-shadow: 0 0 0 6px rgba(200,168,75,0); }
+        }
+
+        .btn-gold {
+            position: relative; overflow: hidden;
+            background: transparent; border: 1px solid rgba(200,168,75,0.5);
+            color: var(--gold); padding: 0.85rem 2.5rem;
+            font-family: 'Rajdhani', sans-serif; font-weight: 600;
+            font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase;
+            border-radius: 2px; cursor: none; transition: color 0.3s, border-color 0.3s;
+        }
+        .btn-gold::before {
+            content: ''; position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+            transition: left 0.35s cubic-bezier(0.23, 1, 0.32, 1); z-index: 0;
+        }
+        .btn-gold:hover { color: var(--obsidian); border-color: var(--gold); }
+        .btn-gold:hover::before { left: 0; }
+        .btn-gold span { position: relative; z-index: 1; }
+
+        .btn-outline {
+            border: 1px solid rgba(248,245,239,0.2); color: rgba(248,245,239,0.6);
+            padding: 0.85rem 2.5rem; font-family: 'Rajdhani', sans-serif;
+            font-weight: 600; font-size: 0.85rem; letter-spacing: 0.12em;
+            text-transform: uppercase; border-radius: 2px; cursor: none;
+            background: transparent; transition: all 0.3s;
+        }
+        .btn-outline:hover { border-color: rgba(248,245,239,0.5); color: var(--off-white); }
+
+        .marquee-wrap { overflow: hidden; border-top: 1px solid rgba(200,168,75,0.08); border-bottom: 1px solid rgba(200,168,75,0.08); }
+        .marquee-inner { display: flex; white-space: nowrap; animation: marquee 30s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .marquee-wrap:hover .marquee-inner { animation-play-state: paused; }
+
+        .topbar { background: linear-gradient(90deg,#0a0906,#1a1813,#0a0906); border-bottom: 1px solid rgba(200,168,75,0.12); }
+
+        .value-pill {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.4rem 1rem; border-radius: 100px;
+            border: 1px solid rgba(200,168,75,0.2);
+            background: rgba(200,168,75,0.05);
+            font-size: 0.75rem; letter-spacing: 0.08em; transition: all 0.3s;
+        }
+        .value-pill:hover { border-color: rgba(200,168,75,0.5); background: rgba(200,168,75,0.12); transform: translateY(-2px); }
+
+        .bg-civil {
+            background-image:
+                linear-gradient(145deg, rgba(10,9,6,0.96) 0%, rgba(10,9,6,0.85) 100%),
+                url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=75&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+        }
+        .bg-hygiene {
+            background-image:
+                linear-gradient(160deg, rgba(10,9,6,0.97) 0%, rgba(26,24,19,0.9) 100%),
+                url('https://images.unsplash.com/photo-1587293852726-70cdb56c2866?w=1600&q=75&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+            background-attachment: fixed;
+        }
+        .bg-agri {
+            background-image:
+                linear-gradient(135deg, rgba(10,9,6,0.95) 0%, rgba(10,9,6,0.82) 100%),
+                url('https://images.unsplash.com/photo-1560493676-04071c5f467b?w=1600&q=75&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+        }
+
+        .ghost-text {
+            position: absolute; font-family: 'Bebas Neue', sans-serif;
+            color: rgba(200,168,75,0.025); white-space: nowrap;
+            pointer-events: none; user-select: none; letter-spacing: 0.05em;
+        }
+
+        .she-banner {
+            background: linear-gradient(135deg, #0e0d0a 0%, #1e1c16 60%, #0e0d0a 100%);
+            border: 1px solid rgba(200,168,75,0.15);
+            border-radius: 20px; position: relative; overflow: hidden;
+        }
+        .she-banner::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+        }
+
+        .she-item {
+            display: flex; gap: 0.8rem; align-items: flex-start;
+            padding: 1rem 1.2rem; border-radius: 10px;
+            border: 1px solid rgba(200,168,75,0.1);
+            transition: all 0.3s;
+        }
+        .she-item:hover { border-color: rgba(200,168,75,0.35); background: rgba(200,168,75,0.05); transform: translateX(4px); }
+
+        .contact-item {
+            display: flex; align-items: center; gap: 0.8rem;
+            padding: 0.8rem 1.2rem; border-radius: 10px;
+            border: 1px solid rgba(200,168,75,0.1); transition: all 0.3s;
+        }
+        .contact-item:hover { border-color: rgba(200,168,75,0.38); background: rgba(200,168,75,0.06); }
+
+        .scroll-indicator { width: 24px; height: 40px; border: 1.5px solid rgba(200,168,75,0.4); border-radius: 20px; display: flex; justify-content: center; padding-top: 6px; }
+        .scroll-dot { width: 4px; height: 8px; background: var(--gold); border-radius: 4px; animation: scrollBounce 2s infinite; }
+        @keyframes scrollBounce { 0%,100% { transform: translateY(0); opacity:1; } 50% { transform: translateY(10px); opacity:0.3; } }
+
+        footer { background: linear-gradient(160deg,#0a0906 0%,#141209 60%,#1a1610 100%); border-top: 1px solid rgba(200,168,75,0.1); }
+
+        .clip-diag { clip-path: polygon(0 3%, 100% 0, 100% 97%, 0 100%); }
+    </style>
+</head>
+<body>
+
+<div class="cursor"  id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+
+<div class="topbar py-2 px-5 flex justify-between items-center" style="font-size:.75rem;letter-spacing:.06em;">
+    <div style="display:flex;gap:1.5rem;color:rgba(200,168,75,0.45);">
+        <span>📞 079 740 4334 / 083 356 4645</span>
+        <span class="hidden sm:inline">✉️ segomotsirooibaadjie390@gmail.com</span>
+    </div>
+    <div style="display:flex;gap:.6rem;">
+        <span class="value-pill" style="color:var(--gold);">⭐ LEVEL 1 · 135%</span>
+        <span class="value-pill hidden sm:inline-flex" style="color:rgba(200,168,75,.8);">100% WOMEN OWNED</span>
+    </div>
+</div>
+
+
+<nav style="padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;" id="mainNav">
+    <div style="display:flex;align-items:center;gap:.75rem;">
+        <div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(135deg,#c8a84b,#8a6d2f);display:flex;align-items:center;justify-content:center;">
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#0a0906;">OGT</span>
+        </div>
+        <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.08em;background:linear-gradient(90deg,#c8a84b,#f0d88a,#c8a84b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">OSENOTSE G TRAD</div>
+            <div style="font-size:.5rem;letter-spacing:.2em;color:rgba(200,168,75,.4);text-transform:uppercase;margin-top:-2px;">Building Excellence · Empowering Communities</div>
+        </div>
+    </div>
+    <div class="hidden md:flex" style="display:flex;align-items:center;gap:2rem;">
+        <a href="index.html"   style="font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:rgba(248,245,239,.4);transition:color .3s;cursor:none;" onmouseover="this.style.color='#c8a84b'" onmouseout="this.style.color='rgba(248,245,239,.4)'">Home</a>
+        <a href="about.html"   style="font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:rgba(248,245,239,.4);transition:color .3s;cursor:none;" onmouseover="this.style.color='#c8a84b'" onmouseout="this.style.color='rgba(248,245,239,.4)'">About</a>
+        <a href="services.html"    style="font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--gold);cursor:none;">Services</a>
+        <a href="contact.html"     style="font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:rgba(248,245,239,.4);transition:color .3s;cursor:none;" onmouseover="this.style.color='#c8a84b'" onmouseout="this.style.color='rgba(248,245,239,.4)'">Contact</a>
+        <button class="btn-gold"><span>Get Quote</span></button>
+    </div>
+</nav>
+<div class="gold-line"></div>
+
+
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grain"></div>
+    <div class="hero-line-l"></div>
+    <div class="hero-line-r"></div>
+
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:0 8% 5.5rem;">
+        <div class="hero-badge reveal" style="margin-bottom:1.5rem;align-self:flex-start;">
+            <span class="hero-badge-dot"></span>
+            <span style="color:var(--gold);">Expert Services · Six Verticals</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:flex-end;" class="reveal">
+            <div>
+                <div style="font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(200,168,75,.45);margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem;">
+                    <span>Home</span><span style="color:rgba(200,168,75,.25);">—</span><span style="color:var(--gold);">Services</span>
+                </div>
+                <h1 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,8vw,7.5rem);line-height:.92;letter-spacing:.02em;">
+                    <span style="background:linear-gradient(135deg,#ffffff,#d4c49b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;display:block;">OUR</span>
+                    <span style="background:linear-gradient(135deg,#c8a84b,#f0d88a,#c8a84b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;display:block;">SERVICES</span>
+                </h1>
+                <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1rem,2.5vw,1.55rem);color:rgba(248,245,239,.5);margin-top:.75rem;">Building excellence across six expert verticals.</p>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:.7rem;padding-bottom:.3rem;">
+                <a href="#construction" class="cat-tab active">🧱 Construction &amp; Finishing</a>
+                <a href="#civil"        class="cat-tab">🌍 Civil &amp; Infrastructure</a>
+                <a href="#hygiene"      class="cat-tab">🧼 Occupational Hygiene</a>
+                <a href="#agri"         class="cat-tab">🌾 Agriculture &amp; Funding</a>
+                <a href="#maintenance"  class="cat-tab">🔧 Maintenance &amp; Refurb</a>
+                <a href="#supply"       class="cat-tab">🚚 Supply Chain</a>
+            </div>
+        </div>
+    </div>
+
+    <div style="position:absolute;bottom:2.5rem;left:8%;">
+        <div class="scroll-indicator"><div class="scroll-dot"></div></div>
+    </div>
+</section>
+
+
+<div class="marquee-wrap" style="background:#070604;padding:.9rem 0;">
+    <div class="marquee-inner">
+        <div style="display:flex;gap:0;flex-shrink:0;">
+            <span style="padding:0 2.5rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;color:rgba(200,168,75,.3);">CONSTRUCTION</span><span style="padding:0 .8rem;color:var(--gold);">✦</span>
+            <span style="padding:0 2.5rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;color:rgba(200,168,75,.3);">CIVIL WORKS</span><span style="padding:0 .8rem;color:var(--gold);">✦</span>
+            <span style="padding:0 2.5rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;color:rgba(200,168,75,.3);">OCCUPATIONAL HYGIENE</span><span style="padding:0 .8rem;color:var(--gold);">✦</span>
+            <span style="padding:0 2.5rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;color:rgba(200,168,75,.3);">AGRICULTURE</span><span style="padding:0 .8rem;color:var(--gold);">✦</span>
+            <span style="padding:0 2.5rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;color:rgba(200,168,75,.3);">MAINTENANCE &amp; REFURB</span><span style="padding:0 .8rem;color:var(--gold);">✦</span>
+            <span style="padding:0 2.5rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;color:rgba(200,168,75,.3);">SUPPLY CHAIN</span><span style="padding:0 .8rem;color:var(--gold);">✦</span>
+        </div>
+        <div style="display:flex;gap:0;flex-shrink:0;" aria-hidden="true">
+            <span style="padding:0 2.5rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;color:rgba(200,168,75,.3);">CONSTRUCTION</span><span style="padding:0 .8rem;color:var(--gold);">✦</span>
+            <span style="padding:0 2.5rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;color:rgba(200,168,75,.3);">CIVIL WORKS</span><span style="padding:0 .8rem;color:var(--gold);">✦</span>
+            <span style="padding:0 2.5rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;color:rgba(200,168,75,.3);">OCCUPATIONAL HYGIENE</span><span style="padding:0 .8rem;color:var(--gold);">✦</span>
+            <span style="padding:0 2.5rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;color:rgba(200,168,75,.3);">AGRICULTURE</span><span style="padding:0 .8rem;color:var(--gold);">✦</span>
+            <span style="padding:0 2.5rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;color:rgba(200,168,75,.3);">MAINTENANCE &amp; REFURB</span><span style="padding:0 .8rem;color:var(--gold);">✦</span>
+            <span style="padding:0 2.5rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;color:rgba(200,168,75,.3);">SUPPLY CHAIN</span><span style="padding:0 .8rem;color:var(--gold);">✦</span>
+        </div>
+    </div>
+</div>
+
+
+<section id="construction" style="padding:7rem 8% 6rem;position:relative;background:linear-gradient(160deg,#0d0c09 0%,#111009 100%);">
+    <div class="ghost-text" style="top:50%;left:50%;transform:translate(-50%,-50%);font-size:16vw;">BUILD</div>
+
+    <div class="section-label reveal">01 — Construction &amp; Finishing</div>
+    <div class="section-head reveal" style="margin-top:1.5rem;">
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,5vw,4.5rem);line-height:.93;background:linear-gradient(135deg,#ffffff,#c8a84b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;">CONSTRUCTION &amp; FINISHING</h2>
+        <div class="section-head-line"></div>
+    </div>
+    <p class="reveal" style="max-width:540px;color:rgba(248,245,239,.5);font-size:.95rem;line-height:1.75;margin-bottom:3rem;">Full-spectrum structural and finishing work for residential, commercial and industrial clients — built to last, finished to perfection.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.4rem;" class="reveal">
+        <div class="svc-card"><span class="svc-num">01</span><div class="svc-icon">🧱</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Bricks &amp; Plaster</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">High-quality brickwork, plastering and block paving — traditional and modern finishes for every project scale.</p></div>
+        <div class="svc-card"><span class="svc-num">02</span><div class="svc-icon">🪞</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Glass Bricks &amp; Air Vents</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Specialist installation of glass bricks, decorative air vents and feature walls that blend form with function.</p></div>
+        <div class="svc-card"><span class="svc-num">03</span><div class="svc-icon">🏛️</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Columns &amp; Cladding</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Architectural concrete columns, structural cladding and decorative elements for lasting visual impact.</p></div>
+        <div class="svc-card"><span class="svc-num">04</span><div class="svc-icon">⚙️</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Cast Iron &amp; Concrete</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Cast iron products, precast concrete, glass panes and joint fillers with precision installation.</p></div>
+        <div class="svc-card"><span class="svc-num">05</span><div class="svc-icon">🔩</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Lintels &amp; Structural Steel</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Steel lintels, primix products and structural steelworks for commercial and residential builds.</p></div>
+        <div class="svc-card"><span class="svc-num">06</span><div class="svc-icon">🏚️</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Demolition &amp; Painting</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Controlled demolition, interior and exterior painting, and high-quality surface finishing.</p></div>
+    </div>
+</section>
+<div class="gold-line"></div>
+
+
+<section id="civil" class="bg-civil clip-diag" style="padding:8rem 8% 7rem;margin-top:-2px;">
+    <div class="section-label reveal">02 — Civil &amp; Infrastructure</div>
+    <div class="section-head reveal" style="margin-top:1.5rem;">
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,5vw,4.5rem);line-height:.93;background:linear-gradient(135deg,#ffffff,#f0d88a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;">CIVIL &amp; INFRASTRUCTURE</h2>
+        <div class="section-head-line"></div>
+    </div>
+    <p class="reveal" style="max-width:540px;color:rgba(248,245,239,.5);font-size:.95rem;line-height:1.75;margin-bottom:3rem;">Infrastructure solutions from roads to water systems — built with engineering precision for communities to rely on for generations.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.4rem;" class="reveal">
+        <div class="svc-card"><span class="svc-num">01</span><div class="svc-icon">💧</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Water &amp; Sanitation</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Water supply networks, sewer systems and full sanitation infrastructure for communities and industries.</p></div>
+        <div class="svc-card"><span class="svc-num">02</span><div class="svc-icon">🧪</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Filtration &amp; Purification</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Complete installation of water filtration plants and purification systems to the highest standards.</p></div>
+        <div class="svc-card"><span class="svc-num">03</span><div class="svc-icon">🏗️</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Reinforced Concrete</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Structural reinforced concrete works — foundations, slabs, retaining walls and heavy civil structures.</p></div>
+        <div class="svc-card"><span class="svc-num">04</span><div class="svc-icon">🛤️</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Road Construction &amp; Paving</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Road building, asphalt surfacing, block paving and surface dressing across the Northern Cape.</p></div>
+        <div class="svc-card"><span class="svc-num">05</span><div class="svc-icon">⛓️</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Structural Steelworks</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Fabrication and erection of structural steel frames, supports and civil steel components.</p></div>
+        <div class="svc-card"><span class="svc-num">06</span><div class="svc-icon">📦</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Material Supply</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Supply of quality building materials, aggregates and construction consumables across the region.</p></div>
+    </div>
+</section>
+<div class="gold-line"></div>
+
+
+<section id="hygiene" class="bg-hygiene" style="padding:7rem 8% 6rem;">
+    <div class="section-label reveal">03 — Occupational Hygiene</div>
+    <div class="section-head reveal" style="margin-top:1.5rem;">
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,5vw,4.5rem);line-height:.93;background:linear-gradient(135deg,#ffffff,#c8a84b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;">OCCUPATIONAL HYGIENE</h2>
+        <div class="section-head-line"></div>
+    </div>
+    <p class="reveal" style="max-width:540px;color:rgba(248,245,239,.5);font-size:.95rem;line-height:1.75;margin-bottom:3rem;">Critical monitoring and environmental services that keep mine sites, construction zones and industrial facilities safe, compliant and operational.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.4rem;" class="reveal">
+        <div class="svc-card"><span class="svc-num">01</span><div class="svc-icon">💨</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Dust Suppression</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Site dust assessment, monitoring and active suppression services. Water tanker and misting cannon hire available.</p></div>
+        <div class="svc-card"><span class="svc-num">02</span><div class="svc-icon">🔊</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Noise Monitoring</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Measurement and monitoring of noise levels with full periodical assessment reports for regulatory compliance.</p></div>
+        <div class="svc-card"><span class="svc-num">03</span><div class="svc-icon">💡</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Illumination Assessments</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Workplace lighting surveys and illumination level assessment reporting for safe working environments.</p></div>
+        <div class="svc-card"><span class="svc-num">04</span><div class="svc-icon">🧪</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Water Sampling &amp; Analysis</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Routine water sampling, testing, and comprehensive compliance reporting to meet all regulatory standards.</p></div>
+        <div class="svc-card"><span class="svc-num">05</span><div class="svc-icon">📋</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Periodical Assessments</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Scheduled occupational hygiene reports, risk analysis and documentation for full audit trails.</p></div>
+        <div class="glass-card" style="padding:1.8rem;display:flex;flex-direction:column;justify-content:space-between;">
+            <div class="card-glow"></div>
+            <div style="font-size:2.5rem;margin-bottom:1rem;">🛡️</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:rgba(248,245,239,.7);line-height:1.6;">SHE excellence is not a checkbox — it is embedded in every service we deliver.</div>
+            <div class="gold-line" style="margin-top:1.5rem;"></div>
+        </div>
+    </div>
+</section>
+<div class="gold-line"></div>
+
+
+<section id="agri" class="bg-agri" style="padding:7rem 8% 6rem;">
+    <div class="section-label reveal">04 — Agriculture &amp; Third-Party Funding</div>
+    <div class="section-head reveal" style="margin-top:1.5rem;">
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,5vw,4.5rem);line-height:.93;background:linear-gradient(135deg,#ffffff,#f0d88a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;">AGRICULTURE &amp; FUNDING</h2>
+        <div class="section-head-line"></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:3rem;align-items:start;" class="reveal">
+        <div style="background:linear-gradient(145deg,#0e0d0a,#1a1814);border:1px solid rgba(200,168,75,0.18);border-left:4px solid var(--gold);border-radius:16px;padding:2.5rem;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:-15px;right:-10px;font-family:'Cormorant Garamond',serif;font-size:9rem;color:rgba(200,168,75,.05);line-height:1;pointer-events:none;">"</div>
+            <div style="font-size:2.5rem;margin-bottom:1.2rem;">🚜</div>
+            <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.15rem;color:rgba(248,245,239,.8);line-height:1.7;margin-bottom:1.5rem;">"Osenotse General Trading in restoring its farmers — not just to the land, but to their futures. We see ourselves as farmers of farmers, cultivating futures in farming."</p>
+            <div class="gold-line"></div>
+            <p style="font-size:.82rem;color:rgba(200,168,75,.5);margin-top:1rem;letter-spacing:.08em;">— Third-Party Funding Administration · Restoring the Little Guy</p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1.4rem;">
+            <div class="glass-card" style="padding:2rem;">
+                <div class="card-glow"></div>
+                <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.04em;background:linear-gradient(90deg,#c8a84b,#f0d88a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.8rem;">ONE FOOT ON THE FARM.</h3>
+                <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:rgba(248,245,239,.6);margin-bottom:1rem;">One foot in the boardroom.</p>
+                <p style="font-size:.85rem;color:rgba(248,245,239,.45);line-height:1.7;">We transcend traditional boundaries — linking Customer &amp; Supplier across the full supply chain. From soil to corporate, we enable multi-generational farming futures.</p>
+            </div>
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(200,168,75,.1);border-radius:14px;padding:1.6rem;display:flex;gap:1.2rem;align-items:flex-start;transition:all .3s;" onmouseover="this.style.borderColor='rgba(200,168,75,.4)';this.style.background='rgba(200,168,75,.04)'" onmouseout="this.style.borderColor='rgba(200,168,75,.1)';this.style.background='rgba(255,255,255,.03)'">
+                <div style="width:46px;height:46px;border-radius:10px;background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.25);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">💼</div>
+                <div>
+                    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:.05em;color:rgba(248,245,239,.9);margin-bottom:.4rem;">Third-Party Funding Administration</div>
+                    <p style="font-size:.83rem;color:rgba(248,245,239,.45);line-height:1.6;">Connecting customers and suppliers from soil to boardroom. Restoring the little guy by bridging the gap across the full supply chain value.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="gold-line"></div>
+
+
+<section id="maintenance" style="padding:7rem 8% 6rem;background:linear-gradient(160deg,#0a0906,#0f0e0b);position:relative;">
+    <div class="ghost-text" style="top:50%;left:50%;transform:translate(-50%,-50%);font-size:14vw;">RESTORE</div>
+
+    <div class="section-label reveal">05 — Maintenance &amp; Refurbishing</div>
+    <div class="section-head reveal" style="margin-top:1.5rem;">
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,5vw,4.5rem);line-height:.93;background:linear-gradient(135deg,#ffffff,#c8a84b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;">MAINTENANCE &amp; REFURBISHING</h2>
+        <div class="section-head-line"></div>
+    </div>
+    <p class="reveal" style="max-width:540px;color:rgba(248,245,239,.5);font-size:.95rem;line-height:1.75;margin-bottom:3rem;">Keeping infrastructure in peak condition and breathing new life into existing structures — every restoration done with craftsmanship and care.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.4rem;" class="reveal">
+        <div class="svc-card"><span class="svc-num">01</span><div class="svc-icon">🔧</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Facility Maintenance</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Planned and reactive maintenance programs keeping your facilities running safely and efficiently year-round.</p></div>
+        <div class="svc-card"><span class="svc-num">02</span><div class="svc-icon">🏠</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Building Refurbishment</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Full structural and cosmetic refurbishment of residential, commercial and municipal buildings.</p></div>
+        <div class="svc-card"><span class="svc-num">03</span><div class="svc-icon">🎨</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Surface Restoration</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Interior and exterior painting, render repair, waterproofing and surface finishing for lasting results.</p></div>
+        <div class="svc-card"><span class="svc-num">04</span><div class="svc-icon">⚡</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Infrastructure Upgrades</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Targeted infrastructure upgrade projects extending the lifespan and performance of existing assets.</p></div>
+    </div>
+</section>
+<div class="gold-line"></div>
+
+
+<section id="supply" style="padding:7rem 8% 6rem;background:linear-gradient(135deg,#0d0c0a,#141210);position:relative;overflow:hidden;">
+    <div class="ghost-text" style="bottom:-5%;right:-5%;font-size:14vw;color:rgba(200,168,75,.022);">SUPPLY</div>
+
+    <div class="section-label reveal">06 — Supply Chain</div>
+    <div class="section-head reveal" style="margin-top:1.5rem;">
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,5vw,4.5rem);line-height:.93;background:linear-gradient(135deg,#ffffff,#f0d88a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;">SUPPLY CHAIN</h2>
+        <div class="section-head-line"></div>
+    </div>
+    <p class="reveal" style="max-width:540px;color:rgba(248,245,239,.5);font-size:.95rem;line-height:1.75;margin-bottom:3rem;">Connecting customers and suppliers across the full value chain — from soil to boardroom, we make commerce move.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.4rem;" class="reveal">
+        <div class="svc-card"><span class="svc-num">01</span><div class="svc-icon">🔗</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Procurement &amp; Sourcing</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Strategic procurement of materials, equipment and services at competitive rates across the supply chain.</p></div>
+        <div class="svc-card"><span class="svc-num">02</span><div class="svc-icon">🚚</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Logistics Coordination</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">End-to-end logistics coordination ensuring materials and resources reach your project on time, every time.</p></div>
+        <div class="svc-card"><span class="svc-num">03</span><div class="svc-icon">📊</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Third-Party Administration</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Funding and administrative support connecting customers, suppliers and financiers across the full chain.</p></div>
+        <div class="svc-card"><span class="svc-num">04</span><div class="svc-icon">📦</div><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.04em;color:rgba(248,245,239,.9);">Material Supply</h3><p style="font-size:.83rem;color:rgba(248,245,239,.45);margin-top:.5rem;line-height:1.65;">Direct supply of construction materials, aggregates and project consumables to sites across the Northern Cape.</p></div>
+    </div>
+</section>
+<div class="gold-line"></div>
+
+
+<section style="padding:5rem 8%;background:linear-gradient(160deg,#0a0906,#111009);" id="services">
+    <div class="she-banner" style="padding:3rem 3rem;" class="reveal">
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:3.5rem;align-items:center;" class="reveal">
+            <div>
+                <div style="width:66px;height:66px;border-radius:50%;background:linear-gradient(135deg,rgba(200,168,75,.18),rgba(200,168,75,.05));border:1px solid rgba(200,168,75,.3);display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin-bottom:1.3rem;">🛡️</div>
+                <h3 style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;letter-spacing:.04em;line-height:.95;background:linear-gradient(135deg,#c8a84b,#f0d88a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">SAFETY HEALTH &amp; ENVIRONMENT</h3>
+                <p style="font-size:.85rem;color:rgba(248,245,239,.4);margin-top:.9rem;line-height:1.65;">SHE excellence is embedded in every service — from dust suppression to structural works.</p>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;">
+                <div class="she-item"><span style="color:var(--gold);font-size:1rem;flex-shrink:0;margin-top:1px;">✓</span><div><div style="font-weight:600;font-size:.9rem;margin-bottom:.25rem;">Employee Wellbeing First</div><div style="font-size:.78rem;color:rgba(248,245,239,.4);line-height:1.5;">Safety of our people is non-negotiable on every site.</div></div></div>
+                <div class="she-item"><span style="color:var(--gold);font-size:1rem;flex-shrink:0;margin-top:1px;">✓</span><div><div style="font-weight:600;font-size:.9rem;margin-bottom:.25rem;">SHE Regulations</div><div style="font-size:.78rem;color:rgba(248,245,239,.4);line-height:1.5;">Full adherence to all SHE regulations and best practices.</div></div></div>
+                <div class="she-item"><span style="color:var(--gold);font-size:1rem;flex-shrink:0;margin-top:1px;">✓</span><div><div style="font-weight:600;font-size:.9rem;margin-bottom:.25rem;">Eco-Friendly Construction</div><div style="font-size:.78rem;color:rgba(248,245,239,.4);line-height:1.5;">Sustainable methods that protect our natural environment.</div></div></div>
+                <div class="she-item"><span style="color:var(--gold);font-size:1rem;flex-shrink:0;margin-top:1px;">✓</span><div><div style="font-weight:600;font-size:.9rem;margin-bottom:.25rem;">Continuous Improvement</div><div style="font-size:.78rem;color:rgba(248,245,239,.4);line-height:1.5;">Ongoing monitoring and enhancement of all SHE performance metrics.</div></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="gold-line"></div>
+
+
+<section style="padding:5rem 8%;background:#070604;">
+    <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.2rem;">
+        <div class="glass-card" style="padding:2rem;text-align:center;">
+            <div class="card-glow"></div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;background:linear-gradient(135deg,#c8a84b,#f0d88a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:.6rem;">KPA Civils</div>
+            <div style="font-size:.75rem;color:rgba(248,245,239,.4);letter-spacing:.1em;text-transform:uppercase;">Primary Client · Northern Cape</div>
+        </div>
+        <div class="glass-card" style="padding:2rem;text-align:center;">
+            <div class="card-glow"></div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;background:linear-gradient(135deg,#c8a84b,#f0d88a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:.6rem;">Municipalities</div>
+            <div style="font-size:.75rem;color:rgba(248,245,239,.4);letter-spacing:.1em;text-transform:uppercase;">Local Government Partners</div>
+        </div>
+        <div class="glass-card" style="padding:2rem;text-align:center;">
+            <div class="card-glow"></div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;background:linear-gradient(135deg,#c8a84b,#f0d88a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:.6rem;">Private Sector</div>
+            <div style="font-size:.75rem;color:rgba(248,245,239,.4);letter-spacing:.1em;text-transform:uppercase;">Residential &amp; Commercial</div>
+        </div>
+    </div>
+
+    <div class="reveal" style="display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem;margin-top:2rem;">
+        <span class="value-pill" style="color:var(--gold);">✦ Personalised Services</span>
+        <span class="value-pill" style="color:var(--gold);">✦ High-Quality Workmanship</span>
+        <span class="value-pill" style="color:var(--gold);">✦ Competitive Pricing</span>
+        <span class="value-pill" style="color:var(--gold);">✦ Flexible Payment</span>
+        <span class="value-pill" style="color:var(--gold);">✦ Community Development</span>
+        <span class="value-pill" style="color:var(--gold);">✦ Sustainability</span>
+    </div>
+</section>
+<div class="gold-line"></div>
+
+
+<section id="contact" style="padding:5rem 8%;background:linear-gradient(135deg,#0d0c0a,#1a1813);">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;" class="reveal">
+        <div>
+            <div class="section-label" style="margin-bottom:1.4rem;">Ready to Build?</div>
+            <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,4vw,3.8rem);line-height:.95;background:linear-gradient(135deg,#ffffff,#c8a84b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">READY TO BUILD,<br>PAVE OR RESTORE?</h2>
+            <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.15rem;color:rgba(248,245,239,.5);margin-top:1rem;line-height:1.7;max-width:380px;">Get in touch — we deliver excellence on every project, every time, across every vertical.</p>
+            <div style="display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap;">
+                <button class="btn-gold"><span>Request a Quote</span></button>
+                <button class="btn-outline">Download Profile</button>
+            </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.8rem;">
+            <div class="contact-item"><span style="font-size:1rem;">📞</span><div><div style="font-size:.6rem;letter-spacing:.18em;color:rgba(200,168,75,.45);text-transform:uppercase;margin-bottom:.15rem;">Phone</div><div style="font-size:.92rem;color:var(--off-white);">079 740 4334 / 083 356 4645</div></div></div>
+            <div class="contact-item"><span style="font-size:1rem;">✉️</span><div><div style="font-size:.6rem;letter-spacing:.18em;color:rgba(200,168,75,.45);text-transform:uppercase;margin-bottom:.15rem;">Email</div><div style="font-size:.92rem;color:var(--off-white);">segomotsirooibaadjie390@gmail.com</div></div></div>
+            <div class="contact-item"><span style="font-size:1rem;">📍</span><div><div style="font-size:.6rem;letter-spacing:.18em;color:rgba(200,168,75,.45);text-transform:uppercase;margin-bottom:.15rem;">Address</div><div style="font-size:.92rem;color:var(--off-white);">20 Mqomo Street, Boichoko, Postmasburg 8420</div></div></div>
+            <div class="contact-item"><div style="font-size:.82rem;color:rgba(200,168,75,.5);letter-spacing:.05em;">OSENOTSE GENERAL TRADING (PTY) LTD · Reg: 2023/957659/07 · Tax: 9204959267</div></div>
+        </div>
+    </div>
+</section>
+
+
+<footer style="padding:2.5rem 8%;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.08em;background:linear-gradient(90deg,#c8a84b,#f0d88a,#c8a84b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">OSENOTSE GENERAL TRADING (PTY) LTD</div>
+        <div style="font-size:.72rem;color:rgba(200,168,75,.25);letter-spacing:.1em;">100% Black &amp; Women Owned · BBBEE Level 1 (135%) · Est. 2023</div>
+        <div style="font-size:.72rem;color:rgba(200,168,75,.25);">© 2024 OGT · Building Excellence, Empowering Communities</div>
+    </div>
+</footer>
+
+<script>
+    const cursor = document.getElementById('cursor');
+    const ring   = document.getElementById('cursorRing');
+    document.addEventListener('mousemove', e => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top  = e.clientY + 'px';
+        setTimeout(() => {
+            ring.style.left = e.clientX + 'px';
+            ring.style.top  = e.clientY + 'px';
+        }, 80);
+    });
+
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach((entry, i) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => entry.target.classList.add('visible'), i * 80);
+                obs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    document.querySelectorAll('.hero .reveal').forEach((el, i) => {
+        setTimeout(() => el.classList.add('visible'), 200 + i * 130);
+    });
+
+    document.querySelectorAll('.glass-card, .svc-card').forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            const x = ((e.clientX - r.left) / r.width)  * 100;
+            const y = ((e.clientY - r.top)  / r.height) * 100;
+            const g = card.querySelector('.card-glow');
+            if (g) {
+                g.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(200,168,75,0.1) 0%, transparent 60%)`;
+                g.style.opacity = '1';
+            }
+        });
+        card.addEventListener('mouseleave', () => {
+            const g = card.querySelector('.card-glow');
+            if (g) g.style.opacity = '0';
+        });
+    });
+
+    window.addEventListener('scroll', () => {
+        document.getElementById('mainNav').style.padding =
+            window.scrollY > 60 ? '0.5rem 1.5rem' : '1rem 1.5rem';
+    });
+
+    const sections = ['construction','civil','hygiene','agri','maintenance','supply'];
+    const tabs = document.querySelectorAll('.cat-tab');
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && window.scrollY >= el.offsetTop - 200) current = id;
+        });
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+            if (tab.getAttribute('href') === '#' + current) tab.classList.add('active');
+        });
+    });
+
+    if (window.innerWidth < 768) {
+        document.querySelectorAll('[style*="grid-template-columns:1fr 1fr"],[style*="grid-template-columns:1fr 2fr"],[style*="grid-template-columns:1fr 1fr 1fr"]').forEach(el => {
+            el.style.gridTemplateColumns = '1fr';
+            el.style.gap = '2rem';
+        });
+    }
+</script>
+</body>
+</html>

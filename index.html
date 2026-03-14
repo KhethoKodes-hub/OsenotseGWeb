@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSENOTSE GENERAL TRADING · BBBEE Level 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Rajdhani:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --gold: #c8a84b;
+            --gold-light: #f0d88a;
+            --gold-dark: #8a6d2f;
+            --obsidian: #0a0906;
+            --charcoal: #1a1813;
+            --off-white: #f8f5ef;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--obsidian);
+            font-family: 'Rajdhani', sans-serif;
+            color: var(--off-white);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        .cursor {
+            width: 12px; height: 12px;
+            background: var(--gold);
+            border-radius: 50%;
+            position: fixed;
+            top: 0; left: 0;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+            mix-blend-mode: difference;
+        }
+        .cursor-ring {
+            width: 38px; height: 38px;
+            border: 1.5px solid rgba(200,168,75,0.6);
+            border-radius: 50%;
+            position: fixed;
+            top: 0; left: 0;
+            pointer-events: none;
+            z-index: 99998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.18s ease, width 0.3s, height 0.3s;
+        }
+        a:hover ~ .cursor, button:hover ~ .cursor { transform: translate(-50%,-50%) scale(2.5); }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--obsidian); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+        .topbar {
+            background: linear-gradient(90deg, #0a0906 0%, #1a1813 50%, #0a0906 100%);
+            border-bottom: 1px solid rgba(200,168,75,0.15);
+        }
+
+        nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px) saturate(1.5);
+            -webkit-backdrop-filter: blur(20px) saturate(1.5);
+            background: rgba(10,9,6,0.85);
+            border-bottom: 1px solid rgba(200,168,75,0.12);
+            transition: all 0.4s;
+        }
+
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(to bottom right, rgba(10,9,6,0.88) 0%, rgba(26,24,19,0.6) 40%, rgba(10,9,6,0.92) 100%),
+                url('./assets/construct.png');
+            background-size: cover;
+            background-position: center 30%;
+            transform: scale(1.05);
+            animation: heroZoom 18s ease-in-out infinite alternate;
+        }
+        @keyframes heroZoom {
+            0% { transform: scale(1.05) translateX(0); }
+            100% { transform: scale(1.12) translateX(-1%); }
+        }
+        .hero-grain {
+            position: absolute; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .gold-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+            position: relative;
+            overflow: hidden;
+        }
+        .gold-line::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+            animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer { 100% { left: 200%; } }
+
+        .glass-card {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(24px) saturate(1.4);
+            -webkit-backdrop-filter: blur(24px) saturate(1.4);
+            border: 1px solid rgba(200,168,75,0.15);
+            border-radius: 16px;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(200,168,75,0.5), transparent);
+        }
+        .glass-card:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(200,168,75,0.45);
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 30px 60px -20px rgba(200,168,75,0.25), 0 0 0 1px rgba(200,168,75,0.1);
+        }
+        .glass-card:hover .card-glow {
+            opacity: 1;
+        }
+        .card-glow {
+            position: absolute;
+            top: -40%; left: -40%;
+            width: 180%; height: 180%;
+            background: radial-gradient(circle at center, rgba(200,168,75,0.06) 0%, transparent 65%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+
+        .section-mining {
+            background-image:
+                linear-gradient(135deg, rgba(10,9,6,0.95) 0%, rgba(26,24,19,0.88) 50%, rgba(10,9,6,0.96) 100%),
+                url('https://images.unsplash.com/photo-1587293852726-70cdb56c2866?w=1600&q=75&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+            background-attachment: fixed;
+        }
+        .section-agri {
+            background-image:
+                linear-gradient(to right, rgba(10,9,6,0.97) 0%, rgba(10,9,6,0.82) 100%),
+                url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1600&q=75&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+        }
+        .section-construction {
+            background-image:
+                linear-gradient(160deg, rgba(10,9,6,0.93) 0%, rgba(138,109,47,0.15) 50%, rgba(10,9,6,0.93) 100%),
+                url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1600&q=75&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+            background-attachment: fixed;
+        }
+
+        .font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; }
+        .font-serif-italic { font-family: 'Cormorant Garamond', serif; font-style: italic; }
+        .font-body { font-family: 'Rajdhani', sans-serif; }
+
+        .text-gold-gradient {
+            background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 40%, var(--gold-light) 65%, var(--gold) 100%);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-box {
+            position: relative;
+            padding: 2rem 1.5rem;
+            border-left: 1px solid rgba(200,168,75,0.2);
+        }
+        .stat-box::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 40px; height: 2px;
+            background: var(--gold);
+            transition: width 0.4s;
+        }
+        .stat-box:hover::after { width: 100%; }
+
+        .service-icon-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(200,168,75,0.12);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .service-icon-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(200,168,75,0.08) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .service-icon-card:hover {
+            border-color: rgba(200,168,75,0.5);
+            transform: translateY(-8px);
+            box-shadow: 0 40px 60px -20px rgba(200,168,75,0.2);
+        }
+        .service-icon-card:hover::after { opacity: 1; }
+        .service-icon-card:hover .service-num { opacity: 1; transform: translateY(0); }
+        .service-num {
+            position: absolute;
+            top: 1rem; right: 1.5rem;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 5rem;
+            color: rgba(200,168,75,0.07);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s;
+            pointer-events: none;
+        }
+        .service-icon {
+            width: 52px; height: 52px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(200,168,75,0.15), rgba(200,168,75,0.05));
+            border: 1px solid rgba(200,168,75,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.2rem;
+            transition: all 0.3s;
+        }
+        .service-icon-card:hover .service-icon {
+            background: linear-gradient(135deg, rgba(200,168,75,0.35), rgba(200,168,75,0.12));
+            border-color: rgba(200,168,75,0.6);
+            transform: rotate(-5deg) scale(1.1);
+        }
+
+        .marquee-wrap { overflow: hidden; border-top: 1px solid rgba(200,168,75,0.1); border-bottom: 1px solid rgba(200,168,75,0.1); }
+        .marquee-inner {
+            display: flex;
+            white-space: nowrap;
+            animation: marquee 28s linear infinite;
+        }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .marquee-wrap:hover .marquee-inner { animation-play-state: paused; }
+
+        .btn-gold {
+            position: relative; overflow: hidden;
+            background: transparent;
+            border: 1px solid rgba(200,168,75,0.5);
+            color: var(--gold);
+            padding: 0.85rem 2.5rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            border-radius: 2px;
+            cursor: none;
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .btn-gold::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+            transition: left 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 0;
+        }
+        .btn-gold:hover { color: var(--obsidian); border-color: var(--gold); }
+        .btn-gold:hover::before { left: 0; }
+        .btn-gold span { position: relative; z-index: 1; }
+
+        .btn-outline-white {
+            border: 1px solid rgba(248,245,239,0.2);
+            color: rgba(248,245,239,0.7);
+            padding: 0.85rem 2.5rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            border-radius: 2px;
+            cursor: none;
+            transition: all 0.3s;
+            background: transparent;
+        }
+        .btn-outline-white:hover { border-color: rgba(248,245,239,0.5); color: var(--off-white); }
+
+        .value-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.2rem;
+            border-radius: 100px;
+            border: 1px solid rgba(200,168,75,0.2);
+            background: rgba(200,168,75,0.05);
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            transition: all 0.3s;
+        }
+        .value-pill:hover {
+            border-color: rgba(200,168,75,0.5);
+            background: rgba(200,168,75,0.12);
+            transform: translateY(-2px);
+        }
+        .value-pill-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--gold);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            border: 1px solid rgba(200,168,75,0.3);
+            background: rgba(200,168,75,0.08);
+            backdrop-filter: blur(12px);
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        .hero-badge-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--gold);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(200,168,75,0.5); }
+            50% { box-shadow: 0 0 0 6px rgba(200,168,75,0); }
+        }
+
+        .clip-diagonal {
+            clip-path: polygon(0 0, 100% 5%, 100% 100%, 0 95%);
+        }
+
+        .timeline-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--gold);
+            position: relative;
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+        .timeline-dot::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 1px solid rgba(200,168,75,0.3);
+        }
+
+        footer {
+            background: linear-gradient(160deg, #0a0906 0%, #141209 60%, #1a1610 100%);
+            border-top: 1px solid rgba(200,168,75,0.1);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scroll-indicator {
+            width: 24px; height: 40px;
+            border: 1.5px solid rgba(200,168,75,0.4);
+            border-radius: 20px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            padding-top: 6px;
+        }
+        .scroll-dot {
+            width: 4px; height: 8px;
+            background: var(--gold);
+            border-radius: 4px;
+            animation: scrollBounce 2s infinite;
+        }
+        @keyframes scrollBounce {
+            0%, 100% { transform: translateY(0); opacity: 1; }
+            50% { transform: translateY(10px); opacity: 0.3; }
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(200,168,75,0.1);
+            transition: all 0.3s;
+        }
+        .contact-item:hover {
+            border-color: rgba(200,168,75,0.35);
+            background: rgba(200,168,75,0.05);
+        }
+        .contact-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            background: rgba(200,168,75,0.1);
+            border: 1px solid rgba(200,168,75,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .section-label {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            display: flex; align-items: center; gap: 0.75rem;
+        }
+        .section-label::before {
+            content: '';
+            width: 30px; height: 1px;
+            background: var(--gold);
+        }
+
+        .bg-agri-hero {
+            background-image:
+                linear-gradient(135deg, rgba(10,9,6,0.96) 0%, rgba(10,9,6,0.80) 100%),
+                url('https://images.unsplash.com/photo-1560493676-04071c5f467b?w=1600&q=75&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+        }
+        .bg-supply-hero {
+            background-image:
+                linear-gradient(135deg, rgba(10,9,6,0.9) 30%, rgba(26,24,19,0.75) 100%),
+                url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1600&q=75&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+
+<div class="topbar py-2 px-4 flex justify-between items-center text-xs" style="font-family:'Rajdhani',sans-serif; letter-spacing:0.06em;">
+    <div class="flex items-center gap-5 text-gray-400">
+        <span>📞 <a href="tel:0797404334" class="hover:text-yellow-400 transition-colors cursor-none">079 740 4334</a></span>
+        <span class="hidden sm:inline">✉️ <a href="mailto:segomotsirooibaadjie390@gmail.com" class="hover:text-yellow-400 transition-colors cursor-none">segomotsirooibaadjie390@gmail.com</a></span>
+    </div>
+    <div class="flex gap-2">
+        <span class="value-pill text-yellow-400">⭐ LEVEL 1 · 135%</span>
+        <span class="value-pill text-yellow-300 font-semibold hidden sm:flex">100% WOMEN OWNED</span>
+    </div>
+</div>
+
+
+<nav class="py-4 px-6 flex justify-between items-center" id="mainNav">
+    <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-sm flex items-center justify-center" style="background:linear-gradient(135deg,#c8a84b,#8a6d2f);">
+            <span style="font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:#0a0906;">OGT</span>
+        </div>
+        <div>
+            <div class="font-display text-xl text-gold-gradient tracking-widest" style="font-family:'Bebas Neue',sans-serif; background:linear-gradient(90deg,#c8a84b,#f0d88a,#c8a84b); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">OSENOTSE G TRAD</div>
+            <div style="font-size:0.55rem; letter-spacing:0.2em; color:rgba(200,168,75,0.5); text-transform:uppercase; margin-top:-2px;">Building Excellence · Empowering Communities</div>
+        </div>
+    </div>
+    <div class="hidden md:flex items-center gap-8" style="font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; font-weight:600;">
+        <a href="about.html" class="text-gray-400 hover:text-yellow-400 transition-colors cursor-none">About</a>
+        <a href="services.html" class="text-gray-400 hover:text-yellow-400 transition-colors cursor-none">Services</a>
+        <a href="contact.html" class="text-gray-400 hover:text-yellow-400 transition-colors cursor-none">Contact</a>
+        <button class="btn-gold cursor-none"><span>Get Quote</span></button>
+    </div>
+    <button class="md:hidden text-yellow-400" onclick="toggleMenu()">☰</button>
+</nav>
+<div class="gold-line"></div>
+
+
+<section class="hero" id="about">
+    <div class="hero-bg"></div>
+    <div class="hero-grain"></div>
+
+    <div style="position:absolute; left:8%; top:0; bottom:0; width:1px; background:linear-gradient(to bottom,transparent,rgba(200,168,75,0.2),transparent); pointer-events:none;"></div>
+    <div style="position:absolute; right:8%; top:0; bottom:0; width:1px; background:linear-gradient(to bottom,transparent,rgba(200,168,75,0.15),transparent); pointer-events:none;"></div>
+
+    <div class="absolute inset-0 flex flex-col justify-center" style="padding: 0 8%;">
+        <div class="max-w-4xl">
+            <div class="hero-badge mb-6 reveal">
+                <span class="hero-badge-dot"></span>
+                <span style="color:var(--gold); font-size:0.7rem; letter-spacing:0.2em;">EST. 2023 · POSTMASBURG, NORTHERN CAPE</span>
+            </div>
+
+            <h1 class="reveal" style="font-family:'Bebas Neue',sans-serif; font-size:clamp(4rem,9vw,8rem); line-height:0.95; letter-spacing:0.02em;">
+                <span style="background:linear-gradient(135deg,#f8f5ef 0%,#ffffff 40%,#d4c49b 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; display:block;">BUILDING</span>
+                <span style="background:linear-gradient(135deg,#c8a84b 0%,#f0d88a 45%,#c8a84b 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; display:block;">EXCELLENCE</span>
+            </h1>
+            <h2 class="reveal" style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:clamp(1.2rem,3vw,2.2rem); color:rgba(248,245,239,0.55); margin-top:0.5rem;">Empowering Communities Across the Northern Cape</h2>
+
+            <p class="reveal mt-6 text-base leading-relaxed" style="max-width:560px; color:rgba(248,245,239,0.65); font-weight:400; font-size:1rem;">
+                A dynamic, 100% women-owned and black-owned construction company delivering top-tier services in construction, mining support, agriculture, civil works and supply chain management.
+            </p>
+
+            <div class="reveal mt-10 flex flex-wrap gap-4 items-center">
+                <button class="btn-gold cursor-none"><span>Explore Our Services</span></button>
+                <button class="btn-outline-white cursor-none">Download Profile</button>
+            </div>
+
+            <div class="reveal mt-14 flex flex-wrap gap-0">
+                <div class="stat-box">
+                    <div style="font-family:'Bebas Neue',sans-serif; font-size:2.8rem; line-height:1; background:linear-gradient(135deg,#c8a84b,#f0d88a); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">135%</div>
+                    <div style="font-size:0.7rem; letter-spacing:0.15em; color:rgba(200,168,75,0.6); text-transform:uppercase; margin-top:2px;">BBBEE Procurement Value</div>
+                </div>
+                <div class="stat-box">
+                    <div style="font-family:'Bebas Neue',sans-serif; font-size:2.8rem; line-height:1; background:linear-gradient(135deg,#c8a84b,#f0d88a); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">100%</div>
+                    <div style="font-size:0.7rem; letter-spacing:0.15em; color:rgba(200,168,75,0.6); text-transform:uppercase; margin-top:2px;">Women &amp; Black Owned</div>
+                </div>
+                <div class="stat-box">
+                    <div style="font-family:'Bebas Neue',sans-serif; font-size:2.8rem; line-height:1; background:linear-gradient(135deg,#c8a84b,#f0d88a); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">LVL 1</div>
+                    <div style="font-size:0.7rem; letter-spacing:0.15em; color:rgba(200,168,75,0.6); text-transform:uppercase; margin-top:2px;">BBBEE Certified</div>
+                </div>
+                <div class="stat-box">
+                    <div style="font-family:'Bebas Neue',sans-serif; font-size:2.8rem; line-height:1; background:linear-gradient(135deg,#c8a84b,#f0d88a); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">6+</div>
+                    <div style="font-size:0.7rem; letter-spacing:0.15em; color:rgba(200,168,75,0.6); text-transform:uppercase; margin-top:2px;">Service Verticals</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="absolute bottom-10" style="left:8%;">
+        <div class="flex flex-col items-center gap-2">
+            <div class="scroll-indicator"><div class="scroll-dot"></div></div>
+            <span style="font-size:0.6rem; letter-spacing:0.2em; color:rgba(200,168,75,0.4); text-transform:uppercase; writing-mode:vertical-rl; margin-top:8px;">Scroll</span>
+        </div>
+    </div>
+</section>
+
+
+<div class="marquee-wrap py-4 bg-black">
+    <div class="marquee-inner">
+        <div style="display:flex; gap:0; flex-shrink:0;">
+            <span style="padding:0 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.12em; color:rgba(200,168,75,0.35);">CONSTRUCTION</span>
+            <span style="padding:0 1rem; color:var(--gold);">✦</span>
+            <span style="padding:0 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.12em; color:rgba(200,168,75,0.35);">MINING SUPPORT</span>
+            <span style="padding:0 1rem; color:var(--gold);">✦</span>
+            <span style="padding:0 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.12em; color:rgba(200,168,75,0.35);">AGRICULTURE</span>
+            <span style="padding:0 1rem; color:var(--gold);">✦</span>
+            <span style="padding:0 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.12em; color:rgba(200,168,75,0.35);">CIVIL WORKS</span>
+            <span style="padding:0 1rem; color:var(--gold);">✦</span>
+            <span style="padding:0 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.12em; color:rgba(200,168,75,0.35);">SUPPLY CHAIN</span>
+            <span style="padding:0 1rem; color:var(--gold);">✦</span>
+            <span style="padding:0 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.12em; color:rgba(200,168,75,0.35);">OCCUPATIONAL HYGIENE</span>
+            <span style="padding:0 1rem; color:var(--gold);">✦</span>
+            <span style="padding:0 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.12em; color:rgba(200,168,75,0.35);">MAINTENANCE &amp; REFURBISHING</span>
+            <span style="padding:0 1rem; color:var(--gold);">✦</span>
+        </div>
+        <div style="display:flex; gap:0; flex-shrink:0;" aria-hidden="true">
+            <span style="padding:0 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.12em; color:rgba(200,168,75,0.35);">CONSTRUCTION</span>
+            <span style="padding:0 1rem; color:var(--gold);">✦</span>
+            <span style="padding:0 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.12em; color:rgba(200,168,75,0.35);">MINING SUPPORT</span>
+            <span style="padding:0 1rem; color:var(--gold);">✦</span>
+            <span style="padding:0 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.12em; color:rgba(200,168,75,0.35);">AGRICULTURE</span>
+            <span style="padding:0 1rem; color:var(--gold);">✦</span>
+            <span style="padding:0 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.12em; color:rgba(200,168,75,0.35);">CIVIL WORKS</span>
+            <span style="padding:0 1rem; color:var(--gold);">✦</span>
+            <span style="padding:0 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.12em; color:rgba(200,168,75,0.35);">SUPPLY CHAIN</span>
+            <span style="padding:0 1rem; color:var(--gold);">✦</span>
+            <span style="padding:0 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.12em; color:rgba(200,168,75,0.35);">OCCUPATIONAL HYGIENE</span>
+            <span style="padding:0 1rem; color:var(--gold);">✦</span>
+            <span style="padding:0 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.12em; color:rgba(200,168,75,0.35);">MAINTENANCE &amp; REFURBISHING</span>
+            <span style="padding:0 1rem; color:var(--gold);">✦</span>
+        </div>
+    </div>
+</div>
+
+
+<section class="py-28 px-6 relative" style="background:linear-gradient(160deg,#0d0c09 0%,#111009 100%);">
+    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'Bebas Neue',sans-serif; font-size:20vw; color:rgba(200,168,75,0.025); white-space:nowrap; pointer-events:none; user-select:none; letter-spacing:0.05em;">OGT</div>
+
+    <div style="max-width:1200px; margin:0 auto;">
+        <div class="section-label reveal">Mission &amp; Foundation</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:5rem; margin-top:3.5rem;" class="reveal">
+            <div>
+                <h2 style="font-family:'Bebas Neue',sans-serif; font-size:clamp(2.5rem,5vw,4.5rem); line-height:0.95; background:linear-gradient(135deg,#f8f5ef,#c8a84b); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">OUR MISSION IS TO BUILD BEYOND EXPECTATION</h2>
+                <p style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.25rem; color:rgba(200,168,75,0.7); margin-top:1.5rem; line-height:1.6;">"Our foundation is built on integrity, our success on quality."</p>
+                <p style="margin-top:1.5rem; color:rgba(248,245,239,0.6); line-height:1.8; font-size:0.95rem;">We are a leading provider of construction and engineering solutions, delivering excellence in every project. We build strong, lasting relationships with clients and communities while empowering employees to achieve their fullest potential.</p>
+
+                <div style="margin-top:2.5rem; display:flex; flex-wrap:wrap; gap:0.6rem;">
+                    <span class="value-pill">Integrity</span>
+                    <span class="value-pill">Quality</span>
+                    <span class="value-pill">Safety</span>
+                    <span class="value-pill">Innovation</span>
+                    <span class="value-pill">Community</span>
+                </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:1.5rem;">
+                <div class="glass-card" style="padding:2rem;">
+                    <div class="card-glow"></div>
+                    <div style="font-size:0.65rem; letter-spacing:0.2em; color:var(--gold); text-transform:uppercase; margin-bottom:0.8rem;">Director</div>
+                    <div style="font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:var(--off-white);">Segomotsi Rooibaadjie‑Mabilo</div>
+                    <p style="font-size:0.9rem; color:rgba(248,245,239,0.5); margin-top:0.5rem;">Visionary entrepreneur with deep-rooted construction experience in the Tsantsabane area, driven to empower her local community.</p>
+                    <div style="display:flex; gap:1rem; margin-top:1.2rem; flex-wrap:wrap;">
+                        <div style="font-size:0.7rem; color:rgba(200,168,75,0.5);">Reg: 2023/957659/07</div>
+                        <div style="font-size:0.7rem; color:rgba(200,168,75,0.5);">Tax: 9204959267</div>
+                    </div>
+                </div>
+                <div class="glass-card" style="padding:2rem;">
+                    <div class="card-glow"></div>
+                    <div style="font-size:0.65rem; letter-spacing:0.2em; color:var(--gold); text-transform:uppercase; margin-bottom:0.8rem;">Location</div>
+                    <div style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.05em; color:rgba(200,168,75,0.9);">POSTMASBURG, NORTHERN CAPE</div>
+                    <p style="font-size:0.85rem; color:rgba(248,245,239,0.5); margin-top:0.5rem;">20 Mqomo Street, Boichoko, Postmasburg 8420</p>
+                    <p style="font-size:0.85rem; color:rgba(200,168,75,0.5); margin-top:0.4rem;">Serving KPA Civils, local municipalities &amp; private clients across the Northern Cape.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="gold-line"></div>
+
+
+<section id="services" class="section-construction py-28 px-6 clip-diagonal" style="margin-top:-2px;">
+    <div style="max-width:1200px; margin:0 auto;">
+        <div class="section-label reveal">Core Services</div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:2rem; flex-wrap:wrap; gap:2rem;" class="reveal">
+            <h2 style="font-family:'Bebas Neue',sans-serif; font-size:clamp(3rem,6vw,5.5rem); line-height:0.92; background:linear-gradient(135deg,#ffffff,#f0d88a); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">WHAT WE<br>BUILD FOR YOU</h2>
+            <p style="max-width:380px; color:rgba(248,245,239,0.55); font-size:0.95rem; line-height:1.75;">Six industry verticals. One team committed to excellence, safety, and quality craftsmanship on every project, every time.</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.5rem; margin-top:3.5rem;">
+
+            <div class="service-icon-card reveal">
+                <span class="service-num">01</span>
+                <div class="service-icon">🧱</div>
+                <h3 style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.05em; color:rgba(248,245,239,0.9);">Construction</h3>
+                <p style="font-size:0.85rem; color:rgba(248,245,239,0.45); margin:0.6rem 0 1.2rem; line-height:1.6;">Full-spectrum structural and finishing work for residential, commercial and industrial clients.</p>
+                <ul style="list-style:none; display:flex; flex-direction:column; gap:0.4rem;">
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Bricks, plaster &amp; block paving</li>
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Structural steel &amp; concrete</li>
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Cladding, columns &amp; glass bricks</li>
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Demolition &amp; painting</li>
+                </ul>
+            </div>
+
+            <div class="service-icon-card reveal">
+                <span class="service-num">02</span>
+                <div class="service-icon">🏗️</div>
+                <h3 style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.05em; color:rgba(248,245,239,0.9);">Civil Works</h3>
+                <p style="font-size:0.85rem; color:rgba(248,245,239,0.45); margin:0.6rem 0 1.2rem; line-height:1.6;">Infrastructure solutions from roads to water systems, built to last generations.</p>
+                <ul style="list-style:none; display:flex; flex-direction:column; gap:0.4rem;">
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Road construction &amp; paving</li>
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Water &amp; sanitation systems</li>
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Water filtration &amp; purification</li>
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Reinforced concrete structures</li>
+                </ul>
+            </div>
+
+            <div class="service-icon-card reveal">
+                <span class="service-num">03</span>
+                <div class="service-icon">⛏️</div>
+                <h3 style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.05em; color:rgba(248,245,239,0.9);">Mining Support</h3>
+                <p style="font-size:0.85rem; color:rgba(248,245,239,0.45); margin:0.6rem 0 1.2rem; line-height:1.6;">Occupational hygiene and environmental monitoring critical to safe mine operations.</p>
+                <ul style="list-style:none; display:flex; flex-direction:column; gap:0.4rem;">
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Dust suppression &amp; monitoring</li>
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Water tanker &amp; misting cannon hire</li>
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Noise &amp; illumination assessments</li>
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Water sampling &amp; reports</li>
+                </ul>
+            </div>
+
+            <div class="service-icon-card reveal bg-agri-hero">
+                <span class="service-num">04</span>
+                <div class="service-icon">🌾</div>
+                <h3 style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.05em; color:rgba(248,245,239,0.9);">Agriculture</h3>
+                <p style="font-size:0.85rem; color:rgba(248,245,239,0.45); margin:0.6rem 0 1.2rem; line-height:1.6;">Restoring farmers to their land and futures. We seed multi-generational agricultural investments.</p>
+                <div style="background:rgba(200,168,75,0.08); border:1px solid rgba(200,168,75,0.2); border-radius:10px; padding:1rem; margin-top:0.5rem;">
+                    <p style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:0.95rem; color:rgba(200,168,75,0.8);">"Farmers of farmers — with one foot on the farm and one in the boardroom, we transcend boundaries."</p>
+                </div>
+            </div>
+
+            <div class="service-icon-card reveal">
+                <span class="service-num">05</span>
+                <div class="service-icon">🚚</div>
+                <h3 style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.05em; color:rgba(248,245,239,0.9);">Supply Chain</h3>
+                <p style="font-size:0.85rem; color:rgba(248,245,239,0.45); margin:0.6rem 0 1.2rem; line-height:1.6;">Connecting customers and suppliers across the value chain — from soil to boardroom.</p>
+                <ul style="list-style:none; display:flex; flex-direction:column; gap:0.4rem;">
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Third-party funding administration</li>
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Material supply &amp; procurement</li>
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Logistics coordination</li>
+                </ul>
+            </div>
+
+            <div class="service-icon-card reveal">
+                <span class="service-num">06</span>
+                <div class="service-icon">🔧</div>
+                <h3 style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.05em; color:rgba(248,245,239,0.9);">Maintenance &amp; Refurb</h3>
+                <p style="font-size:0.85rem; color:rgba(248,245,239,0.45); margin:0.6rem 0 1.2rem; line-height:1.6;">Keeping infrastructure in peak condition and breathing new life into existing structures.</p>
+                <ul style="list-style:none; display:flex; flex-direction:column; gap:0.4rem;">
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Facility maintenance programs</li>
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Building refurbishment &amp; upgrades</li>
+                    <li style="font-size:0.82rem; color:rgba(248,245,239,0.55); display:flex; align-items:center; gap:0.5rem;"><span style="color:var(--gold); font-size:0.5rem;">▶</span> Painting &amp; surface restoration</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section-mining py-20 px-6">
+    <div style="max-width:1200px; margin:0 auto;">
+        <div class="glass-card" style="padding:3rem;" class="reveal">
+            <div class="card-glow"></div>
+            <div style="display:grid; grid-template-columns:1fr 3fr; gap:3rem; align-items:center;" class="reveal">
+                <div>
+                    <div style="width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,rgba(200,168,75,0.2),rgba(200,168,75,0.05)); border:1px solid rgba(200,168,75,0.3); display:flex; align-items:center; justify-content:center; font-size:2.5rem;">🛡️</div>
+                    <h3 style="font-family:'Bebas Neue',sans-serif; font-size:2.5rem; letter-spacing:0.04em; line-height:1; margin-top:1rem; background:linear-gradient(135deg,#c8a84b,#f0d88a); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">SAFETY HEALTH &amp; ENVIRONMENT</h3>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                    <div style="display:flex; gap:1rem; align-items:flex-start;">
+                        <span style="color:var(--gold); margin-top:2px; flex-shrink:0;">✓</span>
+                        <div>
+                            <div style="font-weight:600; font-size:0.9rem; margin-bottom:0.3rem; color:var(--off-white);">Employee Wellbeing</div>
+                            <div style="font-size:0.8rem; color:rgba(248,245,239,0.45); line-height:1.5;">Prioritising safety and health of our people and communities on every project.</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:1rem; align-items:flex-start;">
+                        <span style="color:var(--gold); margin-top:2px; flex-shrink:0;">✓</span>
+                        <div>
+                            <div style="font-weight:600; font-size:0.9rem; margin-bottom:0.3rem; color:var(--off-white);">SHE Compliance</div>
+                            <div style="font-size:0.8rem; color:rgba(248,245,239,0.45); line-height:1.5;">Full adherence to all SHE regulations, best practices and industry standards.</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:1rem; align-items:flex-start;">
+                        <span style="color:var(--gold); margin-top:2px; flex-shrink:0;">✓</span>
+                        <div>
+                            <div style="font-weight:600; font-size:0.9rem; margin-bottom:0.3rem; color:var(--off-white);">Sustainable Practices</div>
+                            <div style="font-size:0.8rem; color:rgba(248,245,239,0.45); line-height:1.5;">Eco-friendly construction methods that protect our natural environment.</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:1rem; align-items:flex-start;">
+                        <span style="color:var(--gold); margin-top:2px; flex-shrink:0;">✓</span>
+                        <div>
+                            <div style="font-weight:600; font-size:0.9rem; margin-bottom:0.3rem; color:var(--off-white);">Continuous Improvement</div>
+                            <div style="font-size:0.8rem; color:rgba(248,245,239,0.45); line-height:1.5;">Ongoing monitoring and performance enhancement of all SHE metrics.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section id="values" class="py-28 px-6" style="background:linear-gradient(160deg,#0a0906 0%,#13110d 100%);">
+    <div style="max-width:1200px; margin:0 auto;">
+        <div class="section-label reveal">Why Choose Us</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:5rem; margin-top:3.5rem; align-items:center;" class="reveal">
+            <div>
+                <h2 style="font-family:'Bebas Neue',sans-serif; font-size:clamp(2.5rem,5vw,4.5rem); line-height:0.95; background:linear-gradient(135deg,#f8f5ef,#c8a84b); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">OUR UNIQUE SELLING POINTS</h2>
+                <div style="margin-top:2.5rem; display:flex; flex-direction:column; gap:0;">
+                    <div style="display:flex; gap:1.5rem; padding:1.5rem 0; border-bottom:1px solid rgba(200,168,75,0.08); transition: all 0.3s;" class="value-row">
+                        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.2rem; color:rgba(200,168,75,0.3); flex-shrink:0; width:2rem; padding-top:2px;">01</div>
+                        <div>
+                            <div style="font-weight:700; font-size:1rem; color:var(--off-white); margin-bottom:0.3rem;">Personalised Services</div>
+                            <div style="font-size:0.85rem; color:rgba(248,245,239,0.45); line-height:1.6;">Every project tailored to your unique needs, budget and timeline.</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:1.5rem; padding:1.5rem 0; border-bottom:1px solid rgba(200,168,75,0.08);">
+                        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.2rem; color:rgba(200,168,75,0.3); flex-shrink:0; width:2rem; padding-top:2px;">02</div>
+                        <div>
+                            <div style="font-weight:700; font-size:1rem; color:var(--off-white); margin-bottom:0.3rem;">High-Quality Workmanship</div>
+                            <div style="font-size:0.85rem; color:rgba(248,245,239,0.45); line-height:1.6;">Meticulous attention to detail backed by years of industry expertise.</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:1.5rem; padding:1.5rem 0; border-bottom:1px solid rgba(200,168,75,0.08);">
+                        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.2rem; color:rgba(200,168,75,0.3); flex-shrink:0; width:2rem; padding-top:2px;">03</div>
+                        <div>
+                            <div style="font-weight:700; font-size:1rem; color:var(--off-white); margin-bottom:0.3rem;">Competitive &amp; Flexible</div>
+                            <div style="font-size:0.85rem; color:rgba(248,245,239,0.45); line-height:1.6;">Fair pricing structures with flexible payment arrangements for clients.</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:1.5rem; padding:1.5rem 0;">
+                        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.2rem; color:rgba(200,168,75,0.3); flex-shrink:0; width:2rem; padding-top:2px;">04</div>
+                        <div>
+                            <div style="font-weight:700; font-size:1rem; color:var(--off-white); margin-bottom:0.3rem;">Community Development</div>
+                            <div style="font-size:0.85rem; color:rgba(248,245,239,0.45); line-height:1.6;">Actively investing in sustainable development and local empowerment.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="glass-card" style="padding:2.5rem; position:relative;">
+                    <div class="card-glow"></div>
+                    <div style="font-size:6rem; font-family:'Cormorant Garamond',serif; color:rgba(200,168,75,0.15); line-height:0.7; user-select:none;">"</div>
+                    <p style="font-family:'Cormorant Garamond',serif; font-size:1.35rem; font-style:italic; color:rgba(248,245,239,0.8); line-height:1.7; margin-top:0.5rem;">The secret of Osenotse General Trading lies in its corporate values. These values began with senior officials and trickle down through the corporate structure to entry-level associates. The shared set of core values are inherent in our behaviors.</p>
+                    <div class="gold-line" style="margin-top:2rem;"></div>
+                    <div style="margin-top:1.2rem; display:flex; align-items:center; gap:1rem;">
+                        <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,rgba(200,168,75,0.3),rgba(200,168,75,0.1)); border:1px solid rgba(200,168,75,0.3); display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-family:'Bebas Neue',sans-serif; color:var(--gold);">OGT</div>
+                        <div>
+                            <div style="font-size:0.85rem; font-weight:600; color:var(--off-white);">Segomotsi Rooibaadjie‑Mabilo</div>
+                            <div style="font-size:0.7rem; color:rgba(200,168,75,0.5); letter-spacing:0.1em; text-transform:uppercase;">Founder &amp; Director</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="padding:1.5rem; margin-top:1.5rem; display:flex; align-items:center; gap:1.5rem;">
+                    <div class="card-glow"></div>
+                    <div style="width:56px; height:56px; border-radius:12px; background:linear-gradient(135deg,rgba(200,168,75,0.25),rgba(200,168,75,0.08)); border:1px solid rgba(200,168,75,0.3); display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0;">⭐</div>
+                    <div>
+                        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.6rem; background:linear-gradient(90deg,#c8a84b,#f0d88a); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:0.05em;">BBBEE LEVEL 1 — 135%</div>
+                        <div style="font-size:0.8rem; color:rgba(248,245,239,0.45); margin-top:0.2rem;">100% Women Owned · 100% Black Owned · Maximum Procurement Value</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="gold-line"></div>
+
+
+<section id="contact" class="bg-supply-hero py-28 px-6">
+    <div style="max-width:1200px; margin:0 auto;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start;" class="reveal">
+            <div>
+                <div class="section-label">Get In Touch</div>
+                <h2 style="font-family:'Bebas Neue',sans-serif; font-size:clamp(3rem,5vw,4.5rem); line-height:0.95; margin-top:1.5rem; background:linear-gradient(135deg,#ffffff,#c8a84b); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">READY TO BUILD TOGETHER?</h2>
+                <p style="margin-top:1.5rem; color:rgba(248,245,239,0.55); font-size:0.95rem; line-height:1.75;">We're ready to deliver excellence on your next project. Reach out and let's start building something great for your community.</p>
+
+                <div style="display:flex; flex-direction:column; gap:1rem; margin-top:2.5rem;">
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div>
+                            <div style="font-size:0.65rem; letter-spacing:0.2em; color:var(--gold); text-transform:uppercase; margin-bottom:0.3rem;">Phone</div>
+                            <div style="font-size:0.9rem; color:var(--off-white);">079 740 4334 / 083 356 4645</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">✉️</div>
+                        <div>
+                            <div style="font-size:0.65rem; letter-spacing:0.2em; color:var(--gold); text-transform:uppercase; margin-bottom:0.3rem;">Email</div>
+                            <div style="font-size:0.9rem; color:var(--off-white);">segomotsirooibaadjie390@gmail.com</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div>
+                            <div style="font-size:0.65rem; letter-spacing:0.2em; color:var(--gold); text-transform:uppercase; margin-bottom:0.3rem;">Address</div>
+                            <div style="font-size:0.9rem; color:var(--off-white);">20 Mqomo St, Boichoko, Postmasburg 8420</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:1rem; margin-top:2.5rem; flex-wrap:wrap;">
+                    <button class="btn-gold cursor-none"><span>Send Message</span></button>
+                    <button class="btn-outline-white cursor-none">Download Company Profile</button>
+                </div>
+            </div>
+
+            <div>
+                <div class="glass-card" style="padding:3rem;">
+                    <div class="card-glow"></div>
+                    <div style="font-family:'Bebas Neue',sans-serif; font-size:4rem; letter-spacing:0.05em; background:linear-gradient(135deg,#c8a84b,#f0d88a,#c8a84b); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; line-height:1;">THANK<br>YOU!</div>
+                    <p style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.1rem; color:rgba(248,245,239,0.6); margin-top:1rem; line-height:1.6;">For taking the time to read our company profile. We look forward to the opportunity to serve you and your community.</p>
+
+                    <div class="gold-line" style="margin:2rem 0;"></div>
+
+                    <div style="display:flex; flex-direction:column; gap:0.8rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem;">
+                            <span style="color:rgba(200,168,75,0.5); letter-spacing:0.1em; text-transform:uppercase;">Registration</span>
+                            <span style="color:rgba(248,245,239,0.7);">2023/957659/07</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem;">
+                            <span style="color:rgba(200,168,75,0.5); letter-spacing:0.1em; text-transform:uppercase;">Tax Number</span>
+                            <span style="color:rgba(248,245,239,0.7);">9204959267</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem;">
+                            <span style="color:rgba(200,168,75,0.5); letter-spacing:0.1em; text-transform:uppercase;">Director</span>
+                            <span style="color:rgba(248,245,239,0.7);">Segomotsi Rooibaadjie‑Mabilo</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem;">
+                            <span style="color:rgba(200,168,75,0.5); letter-spacing:0.1em; text-transform:uppercase;">BBBEE Status</span>
+                            <span style="background:linear-gradient(90deg,#c8a84b,#f0d88a); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; font-weight:700;">LEVEL 1 · 135%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<footer class="py-12 px-6">
+    <div style="max-width:1200px; margin:0 auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:2rem;">
+            <div>
+                <div style="font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:0.08em; background:linear-gradient(90deg,#c8a84b,#f0d88a,#c8a84b); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">OSENOTSE GENERAL TRADING (PTY) LTD</div>
+                <div style="font-size:0.75rem; color:rgba(200,168,75,0.4); letter-spacing:0.15em; text-transform:uppercase; margin-top:0.3rem;">Building Excellence · Empowering Communities</div>
+            </div>
+            <div style="font-size:0.75rem; color:rgba(200,168,75,0.3); letter-spacing:0.1em;">
+                © 2024 OGT · 100% Black &amp; Women Owned · BBBEE Level 1 (135%)
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0;
+    document.addEventListener('mousemove', e => {
+        mx = e.clientX; my = e.clientY;
+        cursor.style.left = mx + 'px';
+        cursor.style.top = my + 'px';
+        setTimeout(() => {
+            ring.style.left = mx + 'px';
+            ring.style.top = my + 'px';
+        }, 80);
+    });
+
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach((entry, i) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => entry.target.classList.add('visible'), i * 80);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+
+    document.querySelectorAll('.hero .reveal').forEach((el, i) => {
+        setTimeout(() => el.classList.add('visible'), 200 + i * 120);
+    });
+
+    document.querySelectorAll('.service-icon-card, .glass-card').forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const rect = card.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            const glow = card.querySelector('.card-glow');
+            if (glow) {
+                glow.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(200,168,75,0.1) 0%, transparent 60%)`;
+                glow.style.opacity = '1';
+            }
+        });
+        card.addEventListener('mouseleave', e => {
+            const glow = card.querySelector('.card-glow');
+            if (glow) glow.style.opacity = '0';
+        });
+    });
+
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('mainNav');
+        if (window.scrollY > 60) {
+            nav.style.padding = '0.6rem 1.5rem';
+        } else {
+            nav.style.padding = '1rem 1.5rem';
+        }
+    });
+
+    if (window.innerWidth < 768) {
+        document.querySelectorAll('[style*="grid-template-columns:1fr 1fr"]').forEach(el => {
+            el.style.gridTemplateColumns = '1fr';
+            el.style.gap = '2rem';
+        });
+        document.querySelectorAll('[style*="grid-template-columns:1fr 3fr"]').forEach(el => {
+            el.style.gridTemplateColumns = '1fr';
+        });
+    }
+</script>
+</body>
+</html>
